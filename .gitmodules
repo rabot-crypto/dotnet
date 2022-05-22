@@ -2,3 +2,7 @@
 	path = project
 	url = ./
 	branch = project
+[submodule "cue.mod/pkg/github.com/rabot-crypto/dotnet"]
+	path = cue.mod/pkg/github.com/rabot-crypto/dotnet
+	url = ./
+	branch = main
