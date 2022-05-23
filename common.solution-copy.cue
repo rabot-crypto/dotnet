@@ -4,7 +4,7 @@ import (
     "dagger.io/dagger"
 )
 
-_#defaultSolutionDir: "/solution"
+#DefaultSolutionDir: "/solution"
 
 _#havingSolutionCopy: {
     workdirOrigin: *"default" | "workdir" | "solutionCopy"
@@ -22,8 +22,8 @@ _#calculateSolutionCopy: {
     workdir: _
 
     if workdirOrigin =~ "default" {
-        workdir: _#defaultSolutionDir
-        solutionCopy: dest: _#defaultSolutionDir
+        workdir: #DefaultSolutionDir
+        solutionCopy: dest: #DefaultSolutionDir
     }
 
     if workdirOrigin =~ "workdir" {

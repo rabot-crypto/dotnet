@@ -7,9 +7,10 @@ import (
 )
 
 #Instruct: {
-    _#calculateCopyStep: {
+    _#calculateSolutionCopyStep: {
         solutionCopy: _
         contents: solutionCopy.contents
+        dest: solutionCopy.dest
     }
 
     _#havingDotnetRestoreProps: {
@@ -25,7 +26,7 @@ import (
         _nonRestoreArgs: _
 
         _restoreArgs: _ | *[
-            "restore", 
+            "restore",
             if _basicArgs != _|_ for x in _basicArgs {x}
             if _nonRestoreArgs != _|_ for x in _nonRestoreArgs {x}
         ]
@@ -49,13 +50,20 @@ import (
             _inputOrPullInput: pullStep.output
         }
 
-        copyStep: {
+        solutionCopyStep: self = {
             _#havingSolutionCopy
             _#calculateSolutionCopy
-            _#calculateCopyStep
+            _#calculateSolutionCopyStep
+
+            workdirStep: {
+                docker.#Set & {
+                    input: _inputOrPullInput
+                    config: workdir: self.workdir
+                }
+            }
 
             docker.#Copy & {
-                input: _inputOrPullInput
+                input: workdirStep.output
             }
         }
 
@@ -65,7 +73,7 @@ import (
             _#calculateDotnetRestoreProps
 
             docker.#Run & {
-                input: copyStep.output
+                input: _ | *solutionCopyStep.output
                 // command: args: ["-c", "dotnet restore; echo '/ ->'; ls /; echo '/root/.nuget:'; ls /root/.nuget; echo '/root/.nuget/fallbackpackages:'; ls /root/.nuget/fallbackpackages"]
                 // command: args: ["-c", "dotnet restore; echo '/:'; ls /; echo '/root/.nuget:'; ls /root/.nuget; echo '/root/.nuget/packages:'; ls /root/.nuget/packages"]
                 // command: name: "bash"
